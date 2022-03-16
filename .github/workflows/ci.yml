@@ -29,4 +29,4 @@ jobs:
           push: true
           tags: |
             ernestas/deploy:latest
-            ernestas/deploy:$${{ env.GITHUB_SHA }}
+            ernestas/deploy:${env.GITHUB_SHA}
