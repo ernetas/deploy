@@ -52,14 +52,14 @@ RUN cd /tmp \
   && curl -ssLo "/tmp/helm-${HELM_VERSION}-linux-amd64.tar.gz.sha256sum" "https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz.sha256sum" \
   && curl -ssLo "/tmp/helm-${HELM_VERSION}-linux-amd64.tar.gz.asc" "https://github.com/helm/helm/releases/download/${HELM_VERSION}/helm-${HELM_VERSION}-linux-amd64.tar.gz.asc" \
   && curl -ssLo "/tmp/helm-${HELM_VERSION}-linux-amd64.tar.gz.sha256sum.asc" "https://github.com/helm/helm/releases/download/${HELM_VERSION}/helm-${HELM_VERSION}-linux-amd64.tar.gz.sha256sum.asc" \
-  && gpg --verify /tmp/helm-${HELM_VERSION}-linux-amd64.tar.gz.sha256sum.asc /tmp/helm-${HELM_VERSION}-linux-amd64.tar.gz.sha256sum \
-  && gpg --verify /tmp/helm-${HELM_VERSION}-linux-amd64.tar.gz.asc /tmp/helm-${HELM_VERSION}-linux-amd64.tar.gz \
-  && shasum --ignore-missing -c /tmp/helm-${HELM_VERSION}-linux-amd64.tar.gz.sha256sum \
+  && gpg --verify "/tmp/helm-${HELM_VERSION}-linux-amd64.tar.gz.sha256sum.asc" "/tmp/helm-${HELM_VERSION}-linux-amd64.tar.gz.sha256sum" \
+  && gpg --verify "/tmp/helm-${HELM_VERSION}-linux-amd64.tar.gz.asc" "/tmp/helm-${HELM_VERSION}-linux-amd64.tar.gz" \
+  && shasum --ignore-missing -c "/tmp/helm-${HELM_VERSION}-linux-amd64.tar.gz.sha256sum" \
   && tar xf "/tmp/helm-${HELM_VERSION}-linux-amd64.tar.gz" --strip-components=1 -C $BINDIR linux-amd64/helm \
-  && curl -sSLo /tmp/velero-checksum "https://github.com/vmware-tanzu/velero/releases/download/${VELERO_VERSION}/CHECKSUM" \
-  && curl -sSLo /tmp/velero-${VELERO_VERSION}-linux-amd64.tar.gz "https://github.com/vmware-tanzu/velero/releases/download/${VELERO_VERSION}/velero-${VELERO_VERSION}-linux-amd64.tar.gz" \
+  && curl -sSLo "/tmp/velero-checksum" "https://github.com/vmware-tanzu/velero/releases/download/${VELERO_VERSION}/CHECKSUM" \
+  && curl -sSLo "/tmp/velero-${VELERO_VERSION}-linux-amd64.tar.gz" "https://github.com/vmware-tanzu/velero/releases/download/${VELERO_VERSION}/velero-${VELERO_VERSION}-linux-amd64.tar.gz" \
   && shasum --ignore-missing -c /tmp/velero-checksum \
-  && tar xf /tmp/velero-${VELERO_VERSION}-linux-amd64.tar.gz --strip-components=1 -C $BINDIR velero-${VELERO_VERSION}-linux-amd64/velero \
+  && tar xf "/tmp/velero-${VELERO_VERSION}-linux-amd64.tar.gz" --strip-components=1 -C $BINDIR "velero-${VELERO_VERSION}-linux-amd64/velero" \
   && curl -sSLo /tmp/kubectl.sha256 "https://dl.k8s.io/${KUBECTL_VERSION}/bin/linux/amd64/kubectl.sha256" \
   && curl -sSLo /tmp/kubectl "https://dl.k8s.io/${KUBECTL_VERSION}/bin/linux/amd64/kubectl" \
   && if [ "$(openssl sha1 -sha256 /tmp/kubectl | awk '{print $2}')" != "$(cat -s /tmp/kubectl.sha256)" ]; then echo "checksum mismatch"; openssl sha1 -sha256 /tmp/kubectl; cat /tmp/kubectl.sha256; exit 1; fi \
@@ -67,12 +67,12 @@ RUN cd /tmp \
   && curl -sSLo $BINDIR/helmfile "https://github.com/roboll/helmfile/releases/download/${HELMFILE_VERSION}/helmfile_linux_amd64" \
   && gpg --recv-keys "C874011F0AB405110D02105534365D9472D7468F" \
   && echo "C874011F0AB405110D02105534365D9472D7468F:6:" | gpg --import-ownertrust \
-  && curl -sSLo /tmp/terraform_${TERRAFORM_VERSION}_linux_amd64.zip "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip" \
-  && curl -sSLo /tmp/terraform_${TERRAFORM_VERSION}_SHA256SUMS https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_SHA256SUMS \
-  && curl -sSLo /tmp/terraform_${TERRAFORM_VERSION}_SHA256SUMS.sig https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_SHA256SUMS.sig \
-  && gpg --verify /tmp/terraform_${TERRAFORM_VERSION}_SHA256SUMS.sig /tmp/terraform_${TERRAFORM_VERSION}_SHA256SUMS \
-  && shasum --algorithm 256 --ignore-missing -c /tmp/terraform_${TERRAFORM_VERSION}_SHA256SUMS \
-  && gunzip -c terraform_${TERRAFORM_VERSION}_linux_amd64.zip > $BINDIR/terraform \
+  && curl -sSLo "/tmp/terraform_${TERRAFORM_VERSION}_linux_amd64.zip" "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip" \
+  && curl -sSLo "/tmp/terraform_${TERRAFORM_VERSION}_SHA256SUMS" "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_SHA256SUMS" \
+  && curl -sSLo "/tmp/terraform_${TERRAFORM_VERSION}_SHA256SUMS.sig" "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_SHA256SUMS.sig" \
+  && gpg --verify "/tmp/terraform_${TERRAFORM_VERSION}_SHA256SUMS.sig" "/tmp/terraform_${TERRAFORM_VERSION}_SHA256SUMS" \
+  && shasum --algorithm 256 --ignore-missing -c "/tmp/terraform_${TERRAFORM_VERSION}_SHA256SUMS" \
+  && gunzip -c "terraform_${TERRAFORM_VERSION}_linux_amd64.zip" > $BINDIR/terraform \
   && curl -sSLo /tmp/terragrunt_linux_amd64 "https://github.com/gruntwork-io/terragrunt/releases/download/${TERRAGRUNT_VERSION}/terragrunt_linux_amd64" \
   && curl -sSLo /tmp/SHA256SUMS "https://github.com/gruntwork-io/terragrunt/releases/download/${TERRAGRUNT_VERSION}/SHA256SUMS" \
   && shasum --ignore-missing -c /tmp/SHA256SUMS \
@@ -81,10 +81,10 @@ RUN cd /tmp \
   && curl -sSLo /tmp/aws-iam-authenticator.sha256 "https://amazon-eks.s3.us-west-2.amazonaws.com/${AWS_IAM_AUTHENTICATOR_VERSION}/bin/linux/amd64/aws-iam-authenticator.sha256" \
   && if [ "$(openssl sha1 -sha256 /tmp/aws-iam-authenticator | awk '{print $2}')" != "$(cat -s /tmp/aws-iam-authenticator.sha256 | awk '{print $1}')" ]; then openssl sha1 -sha256 /tmp/aws-iam-authenticator; cat /tmp/aws-iam-authenticator.sha256; echo "checksum mismatch"; exit 1; fi \
   && mv /tmp/aws-iam-authenticator ${BINDIR}/aws-iam-authenticator \
-  && curl -sSLo /tmp/eksctl_$(uname -s)_amd64.tar.gz "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" \
+  && curl -sSLo "/tmp/eksctl_$(uname -s)_amd64.tar.gz" "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" \
   && curl -sSLo /tmp/eksctl_checksums.txt "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_checksums.txt" \
   && shasum --ignore-missing -c /tmp/eksctl_checksums.txt \
-  && tar xf /tmp/eksctl_$(uname -s)_amd64.tar.gz -C /tmp \
+  && tar xf "/tmp/eksctl_$(uname -s)_amd64.tar.gz" -C /tmp \
   && mv /tmp/eksctl $BINDIR/ \
   && chmod 755 \
       $BINDIR/eksctl \
@@ -95,10 +95,10 @@ RUN cd /tmp \
       $BINDIR/terraform \
       $BINDIR/terragrunt \
 # Install helm plugins
-  && helm plugin install https://github.com/jkroepke/helm-secrets --version ${HELM_PLUGIN_VERSION_SECRETS} \
-  && helm plugin install https://github.com/aslafy-z/helm-git --version ${HELM_PLUGIN_VERSION_GIT} \
-  && helm plugin install https://github.com/databus23/helm-diff --version ${HELM_PLUGIN_VERSION_DIFF} \
-  && helm plugin install https://github.com/adamreese/helm-env --version ${HELM_PLUGIN_VERSION_ENV} \
+  && helm plugin install https://github.com/jkroepke/helm-secrets --version "${HELM_PLUGIN_VERSION_SECRETS}" \
+  && helm plugin install https://github.com/aslafy-z/helm-git --version "${HELM_PLUGIN_VERSION_GIT}" \
+  && helm plugin install https://github.com/databus23/helm-diff --version "${HELM_PLUGIN_VERSION_DIFF}" \
+  && helm plugin install https://github.com/adamreese/helm-env --version "${HELM_PLUGIN_VERSION_ENV}" \
 # Install awscli v2
   && curl -sSLo awscliv2.zip https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip \
   && curl -sSLo awscliv2.zip.sig https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip.sig \
