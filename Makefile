@@ -3,6 +3,7 @@
 
 build: ## Build Docker image
 	docker build -t ernestas/deploy:latest -t ernestas/deploy:$(shell git rev-parse HEAD) .
+	docker scan --severity high --accept-license -f Dockerfile ernestas/deploy:$(shell git rev-parse HEAD)
 
 push: ## Push Docker image
 	docker push ernestas/deploy:$(shell git rev-parse HEAD)
