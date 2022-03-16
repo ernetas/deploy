@@ -27,9 +27,7 @@ jobs:
       -
         name: Build and push image
         run: |
-          ls
-          ls ../
-          docker build . --tag ernestas/deploy --label "runnumber=${GITHUB_RUN_ID}"
+          DOCKER_BUILDKIT=1 docker build . --tag ernestas/deploy:latest --label "runnumber=${GITHUB_RUN_ID}"
           IMAGE_ID=ernestas/deploy
           # Strip git ref prefix from version
           VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
@@ -39,5 +37,6 @@ jobs:
           [ "$VERSION" == "main" ] && VERSION=latest
           echo IMAGE_ID=$IMAGE_ID
           echo VERSION=$VERSION
-          docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
+          docker tag $IMAGE_ID:latest $IMAGE_ID:$VERSION
           docker push $IMAGE_ID:$VERSION
+          docker push $IMAGE_ID:latest
