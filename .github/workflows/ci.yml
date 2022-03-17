@@ -2,42 +2,51 @@ name: ci
 
 on:
   workflow_dispatch:
-  schedule:  
-    - cron:  '30 5,17 * * *'
+  schedule:
+    - cron:  '0 0 * * *'
   push:
     branches:
       - 'main'
 
 jobs:
   docker:
+    permissions:
+      contents: read
+      packages: write
     runs-on: ubuntu-latest
     steps:
-      -
-        name: Set up QEMU
+      - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
-      -
-        name: Set up Docker Buildx
+
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
-      -
-        name: Login to DockerHub
+
+      - name: Login to DockerHub
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      -
-        uses: actions/checkout@v2
-      -
-        name: Build and push Docker image
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/checkout@v2
+
+      - name: Build and push Docker image
         id: docker_build
         uses: docker/build-push-action@v2
         with:
           platforms: linux/amd64,linux/arm64
           tags: |
-            ghcr.io/ernetas/deploy:${{ github.sha }}
-            ghcr.io/ernetas/deploy:latest
-            ernestas/deploy:${{ github.sha }}
-            ernestas/deploy:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/deploy:${{ github.sha }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/deploy:latest
+            ghcr.io/${{ github.repository_owner }}/deploy:${{ github.sha }}
+            ghcr.io/${{ github.repository_owner }}/deploy:latest
           push: true
-      -
-        name: Image digest
+
+      - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
