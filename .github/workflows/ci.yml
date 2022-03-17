@@ -27,18 +27,17 @@ jobs:
       -
         uses: actions/checkout@v2
       -
-        name: Build and push image
-        run: |
-          DOCKER_BUILDKIT=1 docker build . --tag ernestas/deploy:latest --label "runnumber=${GITHUB_RUN_ID}"
-          IMAGE_ID=ernestas/deploy
-          # Strip git ref prefix from version
-          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
-          # Strip "v" prefix from tag name
-          [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
-          echo IMAGE_ID=$IMAGE_ID
-          echo VERSION=$VERSION
-          docker tag $IMAGE_ID:latest $IMAGE_ID:$VERSION
-          docker tag $IMAGE_ID:latest $IMAGE_ID:${{ github.sha }}
-          docker push $IMAGE_ID:$VERSION
-          docker push $IMAGE_ID:${{ github.sha }}
-          docker push $IMAGE_ID:latest
+        name: Build and push Docker image
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          platforms: linux/amd64,linux/arm64
+          tags: |
+            ghcr.io/ernetas/deploy:${{ github.sha }}
+            ghcr.io/ernetas/deploy:latest
+            ernestas/deploy:${{ github.sha }}
+            ernestas/deploy:latest
+          push: true
+      -
+        name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }}
