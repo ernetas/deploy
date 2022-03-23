@@ -3,6 +3,7 @@ This is a multiarch Docker image for deployment tasks. The aim is to focus on Do
 The main reason for this image was to have all tools which Terraform might need (AWS IAM authenticator). Then to have a helm image with all the useful plugins... And so on and on.
 
 [Docker Hub](https://hub.docker.com/repository/docker/ernestas/deploy)
+
 [Github Container Registry](https://github.com/ernetas/deploy/pkgs/container/deploy)
 
 Includes:
